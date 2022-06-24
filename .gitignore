@@ -1,6 +1,18 @@
+*out
+
 # index files in /reference_data
 *ebwt
 *grp
 *idx.fa
 *seq
 *ti
+
+# intermediate files from pre-processing
+*accessions
+*fastq
+*fq
+*sam
+*bam
+*cutadapt
+*bowtiestats
+*rsem*
