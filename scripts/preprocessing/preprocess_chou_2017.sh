@@ -49,5 +49,6 @@ do
   ${ref_dir}/scer.transcripts.20cds20 ${sample} > ${sample}.rsem.stdout \
   2> ${sample}.rsem.stderr
 
+  cd ..
   echo 
 done
