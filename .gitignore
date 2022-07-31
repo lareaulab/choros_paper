@@ -8,6 +8,7 @@
 *ti
 
 # intermediate files from pre-processing
+data/*/raw_data
 *accessions
 *fastq
 *fq
