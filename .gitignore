@@ -16,4 +16,10 @@ data/*/raw_data
 *bam
 *cutadapt
 *bowtiestats
-*rsem*
+*rsem
+
+# choros outputs
+*_bam.Rda
+*_fit.Rda
+*_training.Rda
+*_d5_d3.Rda
