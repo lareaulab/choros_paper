@@ -26,3 +26,4 @@ data/*/raw_data
 *_fit.Rda
 *_training.Rda
 *_d5_d3.Rda
+*_diagnostic_plot.Rda
