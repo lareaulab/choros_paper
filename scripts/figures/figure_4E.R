@@ -100,7 +100,8 @@ save(corr_by_transcript, file=file.path(data_dir, "corr_by_transcript.Rda"))
 # generate plot -----------------------------------------------------------
 
 figure_4E_left <- ggplot(corr_by_transcript, aes(x=raw_corr, y=corrected_corr)) +
-  geom_point(size=0.05, alpha=0.05) + geom_abline(slope=1, intercept=0, col="blue") +
+  geom_point(size=0.05, alpha=0.05) +
+  geom_abline(slope=1, intercept=0, col="blue", size=0.2) +
   theme_classic(base_size=6) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
   xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)"))
@@ -112,6 +113,8 @@ figure_4E_right <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) 
   scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
   xlab("mean coverage") + ylab(expression(Delta*"(correlation)")) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+
+figure_4E <- figure_4E_left + figure_4E_right
 
 ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
        plot=figure_4E, device="pdf", width=1.5, height=1)
