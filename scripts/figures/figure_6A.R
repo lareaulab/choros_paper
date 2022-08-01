@@ -20,25 +20,28 @@ for(expt in expts) {
 
 # generate plot -----------------------------------------------------------
 
-coef_A <- data.frame(codon=subset(CHXTIG_WT_coef, group=="A")$term,
-                     coef_WT=subset(CHXTIG_WT_coef, group=="A")$estimate,
-                     stderr_WT=subset(CHXTIG_WT_coef, group=="A")$std_error,
-                     coef_3AT=subset(CHXTIG_3AT_coef, group=="A")$estimate,
-                     stderr_3AT=subset(CHXTIG_3AT_coef, group=="A")$std_error)
+coef_WT <- subset(CHXTIG_WT_coef, group=="A")
+colnames(coef_WT)[match(c("estimate", "std_error"), colnames(coef_WT))] <- c("est_WT", "stderr_WT")
+coef_3AT <- subset(CHXTIG_3AT_coef, group=="A")
+colnames(coef_3AT)[match(c("estimate", "std_error"), colnames(coef_3AT))] <- c("est_3AT", "stderr_3AT")
+coef_3AT <- coef_3AT[match(coef_3WT$term, coef_3AT$term),]
+
+coef_A <- cbind(coef_WT[, c("term", "est_WT", "stderr_WT")],
+                coef_3AT[, c("est_3AT", "stderr_3AT")])
 
 figure_6A <- ggplot(coef_A,
-                    aes(x=coef_WT, y=coef_3AT,
-                        xmin=coef_WT + qnorm(0.025)*stderr_WT,
-                        xmax=coef_WT + qnorm(0.975)*stderr_WT,
-                        ymin=coef_3AT + qnorm(0.025)*stderr_3AT,
-                        ymax=coef_3AT + qnorm(0.975)*stderr_3AT)) +
+                    aes(x=est_WT, y=est_3AT,
+                        xmin=est_WT + qnorm(0.025)*stderr_WT,
+                        xmax=est_WT + qnorm(0.975)*stderr_WT,
+                        ymin=est_3AT + qnorm(0.025)*stderr_3AT,
+                        ymax=est_3AT + qnorm(0.975)*stderr_3AT)) +
   geom_point(size=0.5, color="grey25") +
   geom_errorbar(color="grey25", alpha=0.5) +
   geom_errorbarh(color="grey25", alpha=0.5) +
   theme_classic(base_size=6) + geom_abline(slope=1, intercept=0, color="blue") +
-  geom_text(data=subset(coef_A, abs(coef_WT)>2 | abs(coef_3AT)>2), color="grey25",
-            aes(label=codon), position=position_nudge(x=0.2, y=0.2), size=2) +
+  geom_text(data=subset(coef_A, abs(est_WT)>2 | abs(est_3AT)>2), color="grey25",
+            aes(label=term), position=position_nudge(x=0.2, y=0.2), size=2) +
   xlab(expression("WT "*beta^A)) + ylab(expression("3AT "*beta^A))
 
 ggsave(filename=file.path(figures_dir, "figure_6A.pdf"),
-       plot=figure_6A, device="pdf", width=3.25, height=2, units="in")
+       plot=figure_6A, device="pdf", width=3.2, height=2, units="in")
