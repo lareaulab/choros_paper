@@ -59,8 +59,8 @@ scer_lengths_filtered$mean_raw <- with(scer_lengths_filtered, mean_raw/num_codon
 
 figure_4F_bottom <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) +
   geom_point(size=0.05, alpha=0.05) +
-  geom_smooth(method="loess", formula=y~x, size=0.1, se=F) +
-  theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25") +
+  theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25", size=0.2) +
+  geom_smooth(method="loess", formula=y~x, size=0.5, se=F) +
   scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
   xlab("mean coverage") + ylab(expression(Delta*"(correlation)")) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
