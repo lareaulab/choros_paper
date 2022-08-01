@@ -35,7 +35,7 @@ f5_coefs$sim_prob <- f5_bias$prob_norm[match(f5_coefs$term, f5_bias$f5)]
 f5_coefs$sim_prob[f5_coefs$expt %in% c("noBias", "n3Bias")] <- 1
 
 f5_coefs$expt <- factor(f5_coefs$expt, levels=expts)
-levels(f5_coefs) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
+levels(f5_coefs$expt) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
 
 f5_plot <- ggplot(f5_coefs,
                   aes(x=sim_prob, y=exp(estimate),
@@ -65,7 +65,7 @@ f3_coefs$sim_prob <- f3_bias$prob_norm[match(f3_coefs$term, f3_bias$term)]
 f3_coefs$sim_prob[f3_coefs$expt %in% c("noBias", "p5Bias")] <- 1
 
 f3_coefs$expt <- factor(f3_coefs$expt, levels=expts)
-levels(f3_coefs) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
+levels(f3_coefs$expt) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
 
 f3_plot <- ggplot(f3_coefs,
                   aes(x=sim_prob, y=exp(estimate),
@@ -93,7 +93,7 @@ A_coefs <- lapply(expts,
 A_coefs <- do.call(rbind, A_coefs)
 
 A_coefs$expt <- factor(A_coefs$expt, levels=expts)
-levels(A_coefs) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
+levels(A_coefs$expt) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
 
 A_plot <- ggplot(A_coefs,
                   aes(x=codon_TE, y=exp(estimate),

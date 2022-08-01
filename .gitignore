@@ -21,6 +21,7 @@ data/*/raw_data
 .Rproj.user
 *.Rproj
 .Rhistory
+data/figure_S5_data.Rda
 
 # choros outputs
 *_bam.Rda
