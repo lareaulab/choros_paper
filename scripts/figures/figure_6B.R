@@ -29,7 +29,7 @@ figure_6B <- ggplot(model_coef,
   geom_hline(yintercept=0, color="grey25", size=0.5) +
   geom_vline(xintercept=0, color="grey25", size=0.5) +
   geom_text(data=subset(model_coef, -log10(p) > 20), size=2, color="grey25",
-            aes(label=term), position=position_nudge(x=-0.2))
+            aes(label=term), position=position_nudge(x=-0.3))
 
 ggsave(filename=file.path(figures_dir, "figure_6B.pdf"),
        plot=figure_6B, device="pdf", width=3.25, height=2, units="in")

@@ -20,7 +20,7 @@ ottr_max <- max(c(ottrUMI_f5_3_training_codon_corr[, "uncorrected"],
 
 figure_5C <- plot_bias(gc_codon_corr) +
   facet_grid(~"Corrected counts") + theme_classic(base_size=6) +
-  theme(legend.position="none") +
+  theme(legend.position="none") + coord_cartesian(ylim=c(0, ottr_max)) +
   xlab("codon position")
 
 ggsave(filename=file.path(figures_dir, "figure_5C.pdf"),
