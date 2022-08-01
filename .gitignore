@@ -17,3 +17,4 @@ data/*/raw_data
 *cutadapt
 *bowtiestats
 *rsem*
+.Rproj.user
