@@ -75,9 +75,10 @@ save(corr_by_transcript, file=file.path(data_dir, "corr_by_transcript.Rda"))
 # generate plot -----------------------------------------------------------
 
 figure_4E <- ggplot(corr_by_transcript, aes(x=raw_corr, y=corrected_corr)) +
-  geom_point(size=0.1, alpha=0.2) + geom_abline(slope=1, intercept=0, col="blue") +
+  geom_point(size=0.05, alpha=0.05) + geom_abline(slope=1, intercept=0, col="blue") +
   theme_classic(base_size=6) +
-  xlab("correlation of raw counts") + ylab("correlation of corrected counts")
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
+  xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)"))
 
 ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
        plot=figure_4E, device="pdf", width=0.75, height=0.75)

@@ -58,10 +58,10 @@ scer_lengths_filtered$mean_raw <- with(scer_lengths_filtered, mean_raw/num_codon
 # generate plot -----------------------------------------------------------
 
 figure_4F_bottom <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) +
-  geom_point(size=0.1, alpha=0.2) + geom_smooth(method="loess", formula=y~x) +
+  geom_point(size=0.05, alpha=0.05) + geom_smooth(method="loess", formula=y~x) +
   theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25") +
   scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
-  xlab("mean read coverage per codon") + ylab(expression(Delta*"(correlation)"))
+  xlab("mean coverage") + ylab(expression(Delta*"(correlation)"))
 figure_4F_top <- ggplot(scer_lengths_filtered, aes(x=mean_raw)) +
   geom_density(fill="grey") + scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
   xlab("") + ylab("density") + theme_classic(base_size=6)
@@ -70,4 +70,4 @@ figure_4F <- figure_4F_top / figure_4F_bottom +
   plot_layout(heights=c(0.2, 0.8))
 
 ggsave(filename=file.path(figures_dir, "figure_4F.pdf"),
-       plot=figure_4F, device="pdf", width=0.75, height=0.75)
+       plot=figure_4F_bottom, device="pdf", width=0.75, height=0.75)
