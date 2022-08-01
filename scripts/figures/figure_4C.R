@@ -11,7 +11,7 @@ figures_dir <- file.path(here(), "figures")
 # load data ---------------------------------------------------------------
 
 expts <- c("fixedLinker_fixedPrimer", "randomLinker_randomPrimer")
-names(expts) <- c("fixed linker\nfixed primer", "random linker\nrandomprimer")
+names(expts) <- c("fixed linker\nfixed primer", "random linker\nrandom primer")
 
 for(expt in expts) {
   load(file.path(data_dir, "lecanda_2016", expt,
@@ -37,7 +37,7 @@ corrected_codon_corr <- data.frame(position=unlist(lapply(expts,
                                                       function(x) {
                                                         rep(x, length(get(paste0(x, "_codon_corr"))[[2]]))
                                                       })))
-corrected_codon_corr$type <- "corrected counts"
+corrected_codon_corr$type <- "Corrected counts"
 corrected_codon_corr$expt <- factor(corrected_codon_corr$exp, levels=expts)
 levels(corrected_codon_corr$expt) <- names(expts)
 corrected_codon_corr$position <- sub("n", "-", corrected_codon_corr$position)
