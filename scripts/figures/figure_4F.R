@@ -58,10 +58,12 @@ scer_lengths_filtered$mean_raw <- with(scer_lengths_filtered, mean_raw/num_codon
 # generate plot -----------------------------------------------------------
 
 figure_4F_bottom <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) +
-  geom_point(size=0.05, alpha=0.05) + geom_smooth(method="loess", formula=y~x) +
+  geom_point(size=0.05, alpha=0.05) +
+  geom_smooth(method="loess", formula=y~x, size=0.1, se=F) +
   theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25") +
   scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
-  xlab("mean coverage") + ylab(expression(Delta*"(correlation)"))
+  xlab("mean coverage") + ylab(expression(Delta*"(correlation)")) +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 figure_4F_top <- ggplot(scer_lengths_filtered, aes(x=mean_raw)) +
   geom_density(fill="grey") + scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
   xlab("") + ylab("density") + theme_classic(base_size=6)
