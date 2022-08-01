@@ -146,7 +146,7 @@ figure_2D <- ggplot(raw_codon_corr, aes(x=position, y=codon_corr, fill=label)) +
   xlab("codon position") + ylab(expression(Delta*" correlation"))
 
 ggsave(filename="~/choros_paper/figures/figure_2D.pdf",
-       plot=figure_2D, device="pdf", width=1.5, height=3, units="in")
+       plot=figure_2D, device="pdf", width=1.5, height=4, units="in")
 
 # position importance plots: corrected counts -----------------------------
 
@@ -188,4 +188,4 @@ figure_2E <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=lab
   xlab("codon position") + ylab(expression(Delta*" correlation"))
 
 ggsave(filename="~/choros_paper/figures/figure_2E.pdf",
-       plot=figure_2E, device="pdf", width=1.5, height=3, units="in")
+       plot=figure_2E, device="pdf", width=1.5, height=4, units="in")
