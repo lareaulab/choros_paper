@@ -54,8 +54,9 @@ random_training <- readLines(file.path(data_dir, "randomLinker_randomPrimer",
                                        "training_set.txt"))
 all_training <- unique(c(fixed_training, random_training))
 
-cts_by_codon_filtered <- subset(cts_by_codon, !(transcript %in% all_training))
-
+cts_by_codon_filtered <- subset(cts_by_codon,
+                                !(cts_by_codon$transcript %in% all_training))
+cts_by_codon_filtered$transcript <- droplevels(cts_by_codon_filtered$transcript)
 
 # compute correlation by transcript ---------------------------------------
 
