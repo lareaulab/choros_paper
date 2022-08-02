@@ -41,7 +41,8 @@ f5_plot <- ggplot(f5_coefs,
                   aes(x=sim_prob, y=exp(estimate),
                       ymin=exp(estimate + qnorm(0.025)*std_error),
                       ymax=exp(estimate + qnorm(0.975)*std_error))) +
-  geom_point(size=0.5, color="grey25") + geom_abline(slope=1, intercept=0, col="blue") +
+  geom_abline(slope=1, intercept=0, col="blue", alpha=0.5) +
+  geom_point(size=0.5, color="grey25") +
   theme_classic(base_size=6) + facet_grid(expt~.) +
   xlab("relative 5' recovery probability") + ylab(expression("exp("*beta^{f^5}*")"))
 
@@ -71,7 +72,8 @@ f3_plot <- ggplot(f3_coefs,
                   aes(x=sim_prob, y=exp(estimate),
                       ymin=exp(estimate + qnorm(0.025)*std_error),
                       ymax=exp(estimate + qnorm(0.975)*std_error))) +
-  geom_point(size=0.5, color="grey25") + geom_abline(slope=1, intercept=0, col="blue") +
+  geom_abline(slope=1, intercept=0, col="blue", alpha=0.5) +
+  geom_point(size=0.5, color="grey25") +
   theme_classic(base_size=6) + facet_grid(expt~.) +
   xlab("relative 3' recovery probability") + ylab(expression("exp("*beta^{f^3}*")"))
 
@@ -99,7 +101,8 @@ A_plot <- ggplot(A_coefs,
                   aes(x=codon_TE, y=exp(estimate),
                       ymin=exp(estimate + qnorm(0.025)*std_error),
                       ymax=exp(estimate + qnorm(0.975)*std_error))) +
-  geom_point(size=0.5, color="grey25") + geom_abline(slope=1, intercept=0, col="blue") +
+  geom_abline(slope=1, intercept=0, col="blue", alpha=0.5) +
+  geom_point(size=0.5, color="grey25") +
   theme_classic(base_size=6) + facet_grid(expt~.) +
   xlab("A-site codon weight") + ylab(expression("exp("*beta^A*")"))
 
