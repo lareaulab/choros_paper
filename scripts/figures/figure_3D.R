@@ -39,14 +39,25 @@ weinberg_A <- within(subset(weinberg_coef, group=="A"), {
 all_A <- rbind(tunney_A, schuller_A, weinberg_A)
 all_A$expt <- factor(all_A$expt, levels=c("Tunney", "Schuller", "Weinberg"))
 
-figure_3D <- ggplot(all_A, 
-                    aes(x=tAI, y=exp(estimate),
-                        ymin=exp(estimate + qnorm(0.025)*std_error),
-                        ymax=exp(estimate + qnorm(0.975)*std_error))) + 
+plot_text <- data.frame(label=sapply(levels(all_A$expt),
+                                     function(x) {
+                                       tmp_cor <- round(with(subset(all_A, expt==x),
+                                                             cor(tAI, exp(estimate))), digits=3)
+                                       # as.character(expression(rho*as.character(paste("=", tmp_cor))))
+                                       paste("cor =", tmp_cor)
+                                     }),
+                        tAI=1, 
+                        estimate=log(5.8),
+                        expt=factor(levels(all_A$expt), levels=levels(all_A$expt)))
+
+figure_3D <- ggplot(all_A, aes(x=tAI, y=exp(estimate))) + 
   geom_point(size=0.5, color="grey25") + 
+  geom_errorbar(aes(ymin=exp(estimate + qnorm(0.025)*std_error),
+                    ymax=exp(estimate + qnorm(0.975)*std_error))) + 
   geom_smooth(method="lm", formula=y~x) + 
   theme_classic(base_size=6) + facet_grid(~expt) + 
-  ylab(expression("exp("*beta^A*")"))
+  ylab(expression("exp("*beta^A*")")) + 
+  geom_text(data=plot_text, aes(label=label), hjust=1, size=1.5) 
 
 ggsave(filename=file.path(figures_dir, "figure_3D.pdf"),
        plot=figure_3D, device="pdf", width=3, height=1.5, units="in")
