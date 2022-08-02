@@ -95,7 +95,8 @@ scer_lengths_filtered$delta_corr <- with(corr_by_transcript,
 scer_lengths_filtered$mean_raw <- rowMeans(scer_lengths_filtered[, c("fixed_raw", "random_raw")])
 scer_lengths_filtered$mean_raw <- with(scer_lengths_filtered, mean_raw/num_codons)
 
-save(corr_by_transcript, file=file.path(data_dir, "corr_by_transcript.Rda"))
+save(corr_by_transcript, scer_lengths_filtered,
+     file=file.path(data_dir, "corr_by_transcript.Rda"))
 
 # generate plot -----------------------------------------------------------
 
@@ -114,7 +115,7 @@ figure_4E_right <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) 
   xlab("mean coverage") + ylab(expression(Delta*"(correlation)")) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
-figure_4E <- figure_4E_left + figure_4E_right
+figure_4E <- figure_4E_left + figure_4E_right + plot_layout(widths=c(1,2))
 
 ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
-       plot=figure_4E, device="pdf", width=1.5, height=1)
+       plot=figure_4E, device="pdf", width=6.5, height=1.5)
