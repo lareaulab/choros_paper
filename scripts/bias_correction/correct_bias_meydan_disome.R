@@ -25,6 +25,17 @@ raw_bam_fname <- file.path(data_dir, "raw_data", expt,
 coef_fname <- file.path(data_dir, "monosome", "monosome_coef.Rda")
 load(coef_fname)
 
+# generate diagnostic plot ------------------------------------------------
+
+diagnostic_plot_obj <- paste0(expt, "_diagnostic_plot")
+diagnostic_plot_fname <- file.path(results_dir, paste0(diagnostic_plot_obj, ".Rda"))
+if(!file.exists(diagnostic_plot_fname)) {
+  assign(diagnostic_plot_obj,
+         plot_diagnostic(raw_bam_fname, transcript_length_fname,
+                         length_min=55, length_max=65))
+  save(list=diagnostic_plot_obj, file=diagnostic_plot_fname)
+}
+
 # read in alignments ------------------------------------------------------
 
 bam_obj <- paste0(expt, "_bam")
