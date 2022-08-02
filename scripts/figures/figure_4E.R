@@ -101,16 +101,16 @@ save(corr_by_transcript, scer_lengths_filtered,
 # generate plot -----------------------------------------------------------
 
 figure_4E_left <- ggplot(corr_by_transcript, aes(x=raw_corr, y=corrected_corr)) +
-  geom_point(size=0.05, alpha=0.05) +
-  geom_abline(slope=1, intercept=0, col="blue", size=0.2) +
+  geom_point(size=0.5, alpha=0.1) +
+  geom_abline(slope=1, intercept=0, col="blue") +
   theme_classic(base_size=6) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
   xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)"))
 
 figure_4E_right <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) +
-  geom_point(size=0.05, alpha=0.05) +
-  theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25", size=0.2) +
-  geom_smooth(method="loess", formula=y~x, size=0.2, se=F) +
+  geom_point(size=0.5, alpha=0.1) +
+  theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25") +
+  geom_smooth(method="loess", formula=y~x, se=F, size=0.5) +
   scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
   xlab("mean coverage") + ylab(expression(Delta*"(correlation)")) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
@@ -118,4 +118,4 @@ figure_4E_right <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) 
 figure_4E <- figure_4E_left + figure_4E_right + plot_layout(widths=c(1,2))
 
 ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
-       plot=figure_4E, device="pdf", width=6.5, height=1.5)
+       plot=figure_4E, device="pdf", width=6.5, height=2)
