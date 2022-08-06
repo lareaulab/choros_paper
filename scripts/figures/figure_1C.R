@@ -24,7 +24,7 @@ save(mean_variance, file=file.path(data_dir, "mean_variance.Rda"))
 
 mean_variance$mean_sq <- mean_variance$mean^2
 
-poisson_fit <- lm(variance ~ 1, mean_variance)
+poisson_fit <- lm(variance ~ 0 + offset(mean), mean_variance)
 quasipoisson_fit <- lm(variance ~ 0 + mean, mean_variance)
 negbin_fit <- lm(variance ~ 0 + offset(mean) + mean_sq, mean_variance)
 
@@ -45,3 +45,5 @@ figure_1C <- ggplot(subset(mean_variance, mean < 1000), aes(x=mean, y=variance))
 
 ggsave(filename=file.path(figures_dir, "figure_1C.pdf"),
        plot=figure_1C, device="pdf", width=2, height=2, units="in")
+ggsave(filename=file.path(figures_dir, "figure_1C.png"),
+       plot=figure_1C, device="png", width=2, height=2, units="in", dpi="print")
