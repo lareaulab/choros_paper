@@ -25,6 +25,8 @@ scales_y <- lapply(expts,
                      scale_y_continuous(limits=c(0, max(unlist(get(paste0(x, "_codon_corr"))))))
                    })
 
+plot_max <- max(sapply(expts, function(x) { max(unlist(get(paste0(x, "_codon_corr")))) }))
+
 corrected_codon_corr <- data.frame(position=unlist(lapply(expts,
                                                           function(x) {
                                                             names(get(paste0(x, "_codon_corr"))[[2]])
@@ -53,9 +55,11 @@ names(fill_colors) <- c("bias", "E", "P", "A", "other")
 figure_4C <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
   geom_col() + scale_fill_manual(values=fill_colors) + 
   theme_classic(base_size=6) + theme(legend.position="none") + 
-  facet_grid_sc(rows=vars(expt), cols=vars(type),
-                scales=list(y=scales_y)) + 
-  xlab("codon position") + ylab(expression(Delta*" correlation"))
+  # facet_grid_sc(rows=vars(expt), cols=vars(type),
+  #               scales=list(y=scales_y)) + 
+  facet_grid(expt~"Corrected counts") + 
+  xlab("codon position") + ylab(expression(Delta*" correlation")) + 
+  coord_cartesian(ylim=c(0, plot_max))
 
 ggsave(filename=file.path(figures_dir, "figure_4C.pdf"),
        plot=figure_4C, device="pdf", width=1.5, height=2.5, units="in")

@@ -37,4 +37,4 @@ figure_4D <- ggplot(all_terms, aes(x=fixed_estimate, y=random_estimate, col=grou
   xlab("fixed adapter / fixed RT primer") + ylab("random adapter\nrandom RT primer")
 
 ggsave(filename=file.path(figures_dir, "figure_4D.pdf"),
-       plot=figure_4D, device="pdf", width=1.5, height=1.75, units="in")
+       plot=figure_4D, device="pdf", width=1.5, height=2.5, units="in")
