@@ -37,11 +37,11 @@ fit_prediction$negbin <- predict(negbin_fit, newdata=fit_prediction)
 # generate plot -----------------------------------------------------------
 
 figure_1C <- ggplot(subset(mean_variance, mean < 1000), aes(x=mean, y=variance)) +
-  theme_classic(base_size=6) + geom_point(alpha=0.1) +
+  theme_classic(base_size=6) + geom_point(size=0.5, alpha=0.1) +
   # scale_fill_gradient(low="grey", high="blue") + labs(fill="") +
   geom_line(data=fit_prediction, aes(y=poisson), col="purple") +
   geom_line(data=fit_prediction, aes(y=quasipoisson), col="green") +
   geom_line(data=fit_prediction, aes(y=negbin), col="red")
 
 ggsave(filename=file.path(figures_dir, "figure_1C.pdf"),
-       plot=figure_1C, device="pdf", width=2.5, height=2, units="in")
+       plot=figure_1C, device="pdf", width=2, height=2, units="in")
