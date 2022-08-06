@@ -12,5 +12,8 @@ load(file.path(data_dir, "meydan_2020", "disome", "disome_diagnostic_plot.Rda"))
 
 # generate plot -----------------------------------------------------------
 
+disome_diagnostic_plot <- disome_diagnostic_plot &
+  theme_classic(base_size=6)
+
 ggsave(filename=file.path(figures_dir, "figure_S7.pdf"),
        plot=disome_diagnostic_plot, device="pdf", width=9, height=6, units="in")
