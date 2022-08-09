@@ -58,11 +58,11 @@ fill_colors <- c(RColorBrewer::brewer.pal(4, "Set1"), "grey")
 names(fill_colors) <- c("bias", "E", "P", "A", "other")
 
 figure_3A <- ggplot(raw_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
-  geom_col() + scale_fill_manual(values=fill_colors) + 
-  theme_classic(base_size=6) + theme(legend.position="none") + 
+  geom_col() + scale_fill_manual(values=fill_colors) + theme_classic(base_size=8) + 
+  theme(legend.position="none", panel.spacing=unit(0.25, "in")) + 
   facet_grid_sc(rows=vars(expt), cols=vars(type),
                 scales=list(y=scales_y)) + 
   xlab("codon position") + ylab(expression(Delta*" correlation"))
 
 ggsave(filename=file.path(figures_dir, "figure_3A.pdf"),
-       plot=figure_3A, device="pdf", width=1.5, height=3, units="in")
+       plot=figure_3A, device="pdf", width=1.75, height=3, units="in")

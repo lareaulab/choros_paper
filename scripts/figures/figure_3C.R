@@ -78,22 +78,24 @@ plot_text <- data.frame(label=sapply(levels(all_f5$expt),
                                        # as.character(expression(rho*as.character(paste("=", tmp_cor))))
                                        paste("cor =", tmp_cor)
                                      }),
-                        rel_eff=0.35, 
-                        estimate=log(5.5),
+                        rel_eff=1, 
+                        estimate=log(5),
                         expt=factor(levels(all_f5$expt), levels=levels(all_f5$expt)))
 
 figure_3C <- ggplot(all_f5, aes(x=rel_eff, y=exp(estimate))) + 
+  geom_smooth(method="lm", formula=y~x) + 
   geom_point(size=0.5, color="grey25") + 
   geom_errorbar(aes(ymin=exp(estimate + qnorm(0.025)*std_error),
-                    ymax=exp(estimate + qnorm(0.975)*std_error))) + 
-  geom_smooth(method="lm", formula=y~x) + 
-  theme_classic(base_size=6) + facet_grid(~expt) + 
+                    ymax=exp(estimate + qnorm(0.975)*std_error)),
+                col="grey25", size=0.5) + 
+  theme_classic(base_size=8) + facet_grid(~expt) + 
   xlab("CircLigase in vitro ligation efficiency") + ylab(expression("exp("*beta^A*")")) + 
-  geom_text(data=plot_text, aes(label=label), hjust=0, size=1.5) + 
-  geom_text(data=data.frame(rel_eff=1, estimate=log(5.5), 
+  geom_text(data=plot_text, aes(label=label), hjust=1, size=1.5) + 
+  geom_text(data=data.frame(rel_eff=1, estimate=log(3.5), 
                             label="does not use\nCircLigase", 
                             expt=factor("Weinberg", levels=levels(all_f5$expt))),
-            color="red", aes(label=label), size=1.5, hjust=1)
+            color="red", aes(label=label), size=1.5, hjust=1) + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
 ggsave(filename=file.path(figures_dir, "figure_3C.pdf"),
        plot=figure_3C, device="pdf", width=3, height=1.5, units="in")

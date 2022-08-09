@@ -51,13 +51,14 @@ plot_text <- data.frame(label=sapply(levels(all_A$expt),
                         expt=factor(levels(all_A$expt), levels=levels(all_A$expt)))
 
 figure_3D <- ggplot(all_A, aes(x=tAI, y=exp(estimate))) + 
+  geom_smooth(method="lm", formula=y~x) + 
   geom_point(size=0.5, color="grey25") + 
   geom_errorbar(aes(ymin=exp(estimate + qnorm(0.025)*std_error),
                     ymax=exp(estimate + qnorm(0.975)*std_error))) + 
-  geom_smooth(method="lm", formula=y~x) + 
-  theme_classic(base_size=6) + facet_grid(~expt) + 
+  theme_classic(base_size=8) + facet_grid(~expt) + 
   ylab(expression("exp("*beta^A*")")) + 
-  geom_text(data=plot_text, aes(label=label), hjust=1, size=1.5) 
+  geom_text(data=plot_text, aes(label=label), hjust=1, size=1.5) + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
 ggsave(filename=file.path(figures_dir, "figure_3D.pdf"),
        plot=figure_3D, device="pdf", width=3, height=1.5, units="in")
