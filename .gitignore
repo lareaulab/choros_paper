@@ -21,7 +21,6 @@ data/*/raw_data
 .Rproj.user
 *.Rproj
 .Rhistory
-data/figure_S5_data.Rda
 
 # choros outputs
 *_bam.Rda
@@ -29,3 +28,8 @@ data/figure_S5_data.Rda
 *_training.Rda
 *_d5_d3.Rda
 *_diagnostic_plot.Rda
+
+# large files
+data/figure_S5_data.Rda
+data/meydan_2020/disome/disome_aa_logo.Rda
+data/chou_2017/mean_variance.Rda
