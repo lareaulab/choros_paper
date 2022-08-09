@@ -95,70 +95,37 @@ paralogs <- data.frame(transcript=unlist(paralogs),
                        group=unlist(mapply(rep, seq(length(paralogs)), times=lengths(paralogs))))
 good_transcripts$paralog_group <- paralogs$group[match(good_transcripts$transcript,
                                                        paralogs$transcript)]
-paralog_group_counts <- plyr::count(good_transcripts, vars="paralog_group")
-paralog_group_counts <- subset(paralog_group_counts, !is.na(paralog_group))
-paralog_group_counts$bin_type <- sapply(paralog_group_counts$freq,
-                                        function(x) {
-                                          ifelse(x == 1, "single",
-                                                 ifelse(x == 2, "double",
-                                                        "multiple"))
-                                        })
-good_transcripts$paralog_bin_type <- paralog_group_counts$bin_type[match(good_transcripts$paralog_group,
-                                                                         paralog_group_counts$paralog_group)]
-good_transcripts <- within(good_transcripts,
-                           paralog_bin_type[is.na(paralog_bin_type)] <- "single")
 
-# if n>=3 transcripts in a group of paralogs, choose top 2 by read coverage
-good_transcripts <- split(good_transcripts, good_transcripts$paralog_bin_type)
-good_transcripts$multiple <- split(good_transcripts$multiple,
-                                   good_transcripts$multiple$paralog_group)
-good_transcripts$multiple <- lapply(good_transcripts$multiple,
-                                    function(x) {
-                                      x <- x[order(x$coverage, decreasing=T),]
-                                      x <- x[c(1,2),]
-                                    })
-good_transcripts$multiple <- do.call(rbind, good_transcripts$multiple)
-good_transcripts <- do.call(rbind, good_transcripts)
+# take top transcript by read coverage per paralog group
+paralog_groups <- split(good_transcripts, good_transcripts$paralog_group)
+paralog_groups <- lapply(paralog_groups,
+                         function(x) {
+                           if(nrow(x) == 1) {
+                             return(x)
+                           } else {
+                             x <- x[order(x$coverage, decreasing=T),]
+                             return(x[1, ])
+                           }
+                         })
+paralog_groups <- do.call(rbind, paralog_groups)
+good_transcripts <- rbind(subset(good_transcripts,
+                                 is.na(good_transcripts$paralog_group)),
+                          paralog_groups)
 
 # take top n=2*num_genes for training/test sets
 good_transcripts <- good_transcripts[order(good_transcripts$coverage, decreasing=T),]
 if(nrow(good_transcripts) > 2*num_genes) {
   good_transcripts <- good_transcripts[seq(2*num_genes),]
+} else {
+  num_genes <- round(nrow(good_transcripts)/2)
+  print(paste("Insufficient genes for training; new number of genes for training:", num_genes))
 }
 
 # split transcripts evenly into training/test sets
-good_transcripts <- split(good_transcripts, good_transcripts$paralog_bin_type)
-## singletons: randomly split into training/test sets
-which_training <- sample.int(nrow(good_transcripts$single),
-                             size=round(nrow(good_transcripts$single)/2))
-good_transcripts$single$which_set <- NA
-good_transcripts$single$which_set[which_training] <- "training"
-good_transcripts$single$which_set[is.na(good_transcripts$single$which_set)] <- "test"
-## doubles: randomly split each group of paralogs into one training and one test
-good_transcripts$double <- split(good_transcripts$double,
-                                 good_transcripts$double$paralog_group)
-good_transcripts$double <- lapply(good_transcripts$double,
-                                  function(x) {
-                                    within(x,
-                                           which_set <- sample(c("training", "test"), size=2))
-                                  })
-good_transcripts$double <- do.call(rbind, good_transcripts$double)
-## multiples:randomly split each group of paralogs into one training and one test
-good_transcripts$multiple <- split(good_transcripts$multiple,
-                                   good_transcripts$multiple$paralog_group)
-good_transcripts$multiple <- lapply(good_transcripts$multiple,
-                                    function(x) {
-                                      within(x,
-                                             which_set <- sample(c("training", "test"), size=2))
-                                    })
-good_transcripts$multiple <- do.call(rbind, good_transcripts$multiple)
-# bin all together
-good_transcripts <- do.call(rbind, good_transcripts)
-training_set <- as.character(good_transcripts$transcript[good_transcripts$which_set=="training"])
-test_set <- as.character(good_transcripts$transcript[good_transcripts$which_set=="test"])
-
-print(paste("Number of genes in training set:", length(training_set)))
-print(paste("Number of genes in test set:", length(test_set)))
+training_set <- sample.int(nrow(good_transcripts), size=num_genes)
+training_set <- as.character(good_transcripts$transcript)[training_set]
+test_set <- subset(good_transcripts, !(as.character(transcript) %in% training_set))
+test_set <- as.character(test_set$transcript)
 
 writeLines(training_set, con=file.path(results_dir, "training_set.txt"))
 writeLines(test_set, con=file.path(results_dir, "test_set.txt"))
