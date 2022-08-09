@@ -34,6 +34,14 @@ fit_prediction$poisson <- predict(poisson_fit, newdata=fit_prediction)
 fit_prediction$quasipoisson <- predict(quasipoisson_fit, newdata=fit_prediction)
 fit_prediction$negbin <- predict(negbin_fit, newdata=fit_prediction)
 
+# compute goodness of fit -------------------------------------------------
+
+AIC(poisson_fit, quasipoisson_fit)
+BIC(poisson_fit, quasipoisson_fit)
+
+AIC(poisson_fit, negbin_fit)
+BIC(poisson_fit, negbin_fit)
+
 # generate plot -----------------------------------------------------------
 
 figure_1C <- ggplot(subset(mean_variance, mean < 1000), aes(x=mean, y=variance)) +
