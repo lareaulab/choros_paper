@@ -33,16 +33,6 @@ min_coverage <- 5
 min_nonzero <- 100
 regression_model <- formula(count ~ transcript + A + P + E + d5*f5 + d3*f3 + gc)
 
-# generate diagnostic plot ------------------------------------------------
-
-diagnostic_plot_obj <- paste0(expt, "_diagnostic_plot")
-diagnostic_plot_fname <- file.path(results_dir, paste0(diagnostic_plot_obj, ".Rda"))
-if(!file.exists(diagnostic_plot_fname)) {
-  assign(diagnostic_plot_obj,
-         plot_diagnostic(bam_alignment_fname, transcript_length_fname))
-  save(list=diagnostic_plot_obj, file=diagnostic_plot_fname)
-}
-
 # load footprint alignments -----------------------------------------------
 
 bam_obj <- paste0(expt, "_bam")
@@ -74,94 +64,8 @@ if(!file.exists(subsets_fname)) {
 
 # choose transcripts for training/test sets -------------------------------
 
-# per transcript: calculate mean codon coverage and number nonzero codon positions
-transcript_coverage <- calculate_transcript_density(get(bam_obj),
-                                                    transcript_length_fname)
-transcript_num_nonzero <- count_nonzero_codons(get(bam_obj))
-
-# check if number good transcripts sufficient for training
-good_transcripts <- data.frame(transcript=names(transcript_coverage),
-                               coverage=transcript_coverage,
-                               num_nonzero=transcript_num_nonzero[match(names(transcript_coverage),
-                                                                        names(transcript_num_nonzero))])
-good_transcripts <- subset(good_transcripts,
-                           coverage > min_coverage & num_nonzero > min_nonzero)
-
-# identify paralogs
-paralogs <- readLines(paralogs_fname)
-paralogs <- strsplit(paralogs, split="\t")
-paralogs <- subset(paralogs, lengths(paralogs) > 1)
-paralogs <- data.frame(transcript=unlist(paralogs),
-                       group=unlist(mapply(rep, seq(length(paralogs)), times=lengths(paralogs))))
-good_transcripts$paralog_group <- paralogs$group[match(good_transcripts$transcript,
-                                                       paralogs$transcript)]
-paralog_group_counts <- plyr::count(good_transcripts, vars="paralog_group")
-paralog_group_counts <- subset(paralog_group_counts, !is.na(paralog_group))
-paralog_group_counts$bin_type <- sapply(paralog_group_counts$freq,
-                                        function(x) {
-                                          ifelse(x == 1, "single",
-                                                 ifelse(x == 2, "double",
-                                                        "multiple"))
-                                        })
-good_transcripts$paralog_bin_type <- paralog_group_counts$bin_type[match(good_transcripts$paralog_group,
-                                                                         paralog_group_counts$paralog_group)]
-good_transcripts <- within(good_transcripts,
-                           paralog_bin_type[is.na(paralog_bin_type)] <- "single")
-
-# if n>=3 transcripts in a group of paralogs, choose top 2 by read coverage
-good_transcripts <- split(good_transcripts, good_transcripts$paralog_bin_type)
-good_transcripts$multiple <- split(good_transcripts$multiple,
-                                   good_transcripts$multiple$paralog_group)
-good_transcripts$multiple <- lapply(good_transcripts$multiple,
-                                    function(x) {
-                                      x <- x[order(x$coverage, decreasing=T),]
-                                      x <- x[c(1,2),]
-                                    })
-good_transcripts$multiple <- do.call(rbind, good_transcripts$multiple)
-good_transcripts <- do.call(rbind, good_transcripts)
-
-# take top n=2*num_genes for training/test sets
-good_transcripts <- good_transcripts[order(good_transcripts$coverage, decreasing=T),]
-if(nrow(good_transcripts) > 2*num_genes) {
-  good_transcripts <- good_transcripts[seq(2*num_genes),]
-}
-
-# split transcripts evenly into training/test sets
-good_transcripts <- split(good_transcripts, good_transcripts$paralog_bin_type)
-## singletons: randomly split into training/test sets
-which_training <- sample.int(nrow(good_transcripts$single),
-                             size=round(nrow(good_transcripts$single)/2))
-good_transcripts$single$which_set <- NA
-good_transcripts$single$which_set[which_training] <- "training"
-good_transcripts$single$which_set[is.na(good_transcripts$single$which_set)] <- "test"
-## doubles: randomly split each group of paralogs into one training and one test
-good_transcripts$double <- split(good_transcripts$double,
-                                 good_transcripts$double$paralog_group)
-good_transcripts$double <- lapply(good_transcripts$double,
-                                  function(x) {
-                                    within(x,
-                                           which_set <- sample(c("training", "test"), size=2))
-                                  })
-good_transcripts$double <- do.call(rbind, good_transcripts$double)
-## multiples:randomly split each group of paralogs into one training and one test
-good_transcripts$multiple <- split(good_transcripts$multiple,
-                                   good_transcripts$multiple$paralog_group)
-good_transcripts$multiple <- lapply(good_transcripts$multiple,
-                                    function(x) {
-                                      within(x,
-                                             which_set <- sample(c("training", "test"), size=2))
-                                    })
-good_transcripts$multiple <- do.call(rbind, good_transcripts$multiple)
-# bin all together
-good_transcripts <- do.call(rbind, good_transcripts)
-training_set <- as.character(good_transcripts$transcript[good_transcripts$which_set=="training"])
-test_set <- as.character(good_transcripts$transcript[good_transcripts$which_set=="test"])
-
-print(paste("Number of genes in training set:", length(training_set)))
-print(paste("Number of genes in test set:", length(test_set)))
-
-writeLines(training_set, con=file.path(results_dir, "training_set.txt"))
-writeLines(test_set, con=file.path(results_dir, "test_set.txt"))
+training_set <- readLines(file.path(dataset_dir, "training_set.txt"))
+test_set <- readLines(file.path(dataset_dir, "test_set.txt"))
 
 # initialize training data for regression ---------------------------------
 

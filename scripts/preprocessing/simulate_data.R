@@ -69,7 +69,7 @@ for(i in 1:num_chunks) {
                                    rhos=scer_rho, pis=scer_pi,
                                    delta_5=d5_bias, delta_3=d3_bias,
                                    min_size=min_size, max_size=max_size,
-                                   lig_bias=no_f5_bias, circ_bias=no_f3_bias,
+                                   lig_bias=no_f3_bias, circ_bias=no_f5_bias,
                                    rt_bias=rt_bias, mc.cores=num_cores))
   write_footprints_fastq(get(chunk_name),
                          file.path(parts_dir, paste0(chunk_name, ".fq")))
@@ -90,7 +90,7 @@ for(i in 1:num_chunks) {
                                    rhos=scer_rho, pis=scer_pi,
                                    delta_5=d5_bias, delta_3=d3_bias,
                                    min_size=min_size, max_size=max_size,
-                                   lig_bias=no_f5_bias, circ_bias=f3_bias,
+                                   lig_bias=f3_bias, circ_bias=no_f5_bias,
                                    rt_bias=rt_bias, mc.cores=num_cores))
   write_footprints_fastq(get(chunk_name),
                          file.path(parts_dir, paste0(chunk_name, ".fq")))
@@ -112,7 +112,7 @@ for(i in 1:num_chunks) {
                                    rhos=scer_rho, pis=scer_pi,
                                    delta_5=d5_bias, delta_3=d3_bias,
                                    min_size=min_size, max_size=max_size,
-                                   lig_bias=f5_bias, circ_bias=no_f3_bias,
+                                   lig_bias=no_f3_bias, circ_bias=f5_bias,
                                    rt_bias=rt_bias, mc.cores=num_cores))
   write_footprints_fastq(get(chunk_name),
                          file.path(parts_dir, paste0(chunk_name, ".fq")))
