@@ -2,26 +2,34 @@ rm(list=ls())
 
 library(here)
 library(choros)
+library(facetscales)
 
-data_dir <- file.path(here(), "data")
+data_dir <- "~/footprint-bias/expts/wu_2019"
 figures_dir <- file.path(here(), "figures")
 
 # load data ---------------------------------------------------------------
 
-ottr_dir <- "~/footprint-bias/expts/ferguson_2021/ottrUMI_Asite_f5_3_f3_3"
+load(file.path(data_dir, "CHXTIG_WT_vs_3AT", "WT_3AT_fit.Rda"))
 
-load(file.path(ottr_dir, "ottrUMI_f5_3_training_codon_corr.Rda"))
-load(file.path(ottr_dir, "test_gc", "ottrUMI_f5_3_gc_corr.Rda"))
+# generate plot -----------------------------------------------------------
 
-# make plot ---------------------------------------------------------------
+model_coef <- parse_coefs(WT_3AT_fit)
 
-ottr_max <- max(c(ottrUMI_f5_3_training_codon_corr[, "uncorrected"],
-                  gc_codon_corr))
+## 3AT was reference level for expt --> need to take negative value
 
-figure_5B <- plot_bias(ottrUMI_f5_3_training_codon_corr[, "uncorrected"]) +
-  facet_grid(~"Raw counts") + theme_classic(base_size=6) +
-  theme(legend.position="none") + coord_cartesian(ylim=c(0, ottr_max)) +
-  xlab("codon position")
+model_coef <- subset(model_coef, group=="A:expt")
+
+figure_5B <- ggplot(model_coef,
+                    aes(x=-estimate, y=-log10(p+1e-25),
+                        xmin=-(estimate + qnorm(0.025)*std_error),
+                        xmax=-(estimate + qnorm(0.975)*std_error))) +
+  geom_point(size=0.5, color="grey25") + # geom_errorbarh(color="grey25") +
+  coord_cartesian(xlim=c(-2,4)) + theme_classic(base_size=6) +
+  xlab(expression(beta^{"A:expt"})) + ylab("-log10(p)") +
+  geom_hline(yintercept=0, color="grey25", size=0.5) +
+  geom_vline(xintercept=0, color="grey25", size=0.5) +
+  geom_text(data=subset(model_coef, -log10(p) > 20), size=2, color="grey25",
+            aes(label=term), position=position_nudge(x=-0.3))
 
 ggsave(filename=file.path(figures_dir, "figure_5B.pdf"),
-       plot=figure_5B, device="pdf", width=2, height=2, units="in")
+       plot=figure_5B, device="pdf", width=3.25, height=2, units="in")

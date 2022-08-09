@@ -59,7 +59,8 @@ names(fill_colors) <- c("bias", "E", "P", "A", "other")
 
 figure_3A <- ggplot(raw_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
   geom_col() + scale_fill_manual(values=fill_colors) + theme_classic(base_size=8) + 
-  theme(legend.position="none", panel.spacing=unit(0.25, "in")) + 
+  theme(legend.position="none", panel.spacing=unit(0.25, "in"),
+        axis.text.x=element_text(size=6)) + 
   facet_grid_sc(rows=vars(expt), cols=vars(type),
                 scales=list(y=scales_y)) + 
   xlab("codon position") + ylab(expression(Delta*" correlation"))

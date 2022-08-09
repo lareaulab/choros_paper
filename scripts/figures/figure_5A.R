@@ -29,7 +29,7 @@ coef_A <- data.frame(codons=codons,
                      est_3AT=coef_3AT$estimate[match(codons, coef_3AT$term)],
                      stderr_3AT=coef_3AT$std_error[match(codons, coef_3AT$term)])
 
-figure_6A <- ggplot(coef_A,
+figure_5A <- ggplot(coef_A,
                     aes(x=est_WT, y=est_3AT,
                         xmin=est_WT + qnorm(0.025)*stderr_WT,
                         xmax=est_WT + qnorm(0.975)*stderr_WT,
@@ -43,5 +43,5 @@ figure_6A <- ggplot(coef_A,
             aes(label=codons), position=position_nudge(x=0.2, y=0.2), size=2) +
   xlab(expression("WT "*beta^A)) + ylab(expression("3AT "*beta^A))
 
-ggsave(filename=file.path(figures_dir, "figure_6A.pdf"),
-       plot=figure_6A, device="pdf", width=3.2, height=2, units="in")
+ggsave(filename=file.path(figures_dir, "figure_5A.pdf"),
+       plot=figure_5A, device="pdf", width=3.2, height=2, units="in")
