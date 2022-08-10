@@ -66,56 +66,91 @@ scer_lengths$fixed_corrected <- cts_by_transcript$fixedLinker_fixedPrimer$correc
 scer_lengths$random_raw <- cts_by_transcript$randomLinker_randomPrimer$count
 scer_lengths$random_corrected <- cts_by_transcript$randomLinker_randomPrimer$correct_250
 
-fixed_training <- readLines(file.path(data_dir, "fixedLinker_fixedPrimer",
-                                      "training_set.txt"))
-random_training <- readLines(file.path(data_dir, "randomLinker_randomPrimer",
-                                       "training_set.txt"))
-all_training <- unique(c(fixed_training, random_training))
+training_set <- readLines(file.path(data_dir, "training_set.txt"))
+test_set <- readLines(file.path(data_dir, "test_set.txt"))
 
-cts_by_codon_filtered <- subset(cts_by_codon,
-                                !(cts_by_codon$transcript %in% all_training))
-cts_by_codon_filtered$transcript <- droplevels(cts_by_codon_filtered$transcript)
-scer_lengths_filtered <- subset(scer_lengths,
-                                !(scer_lengths$transcript %in% all_training))
+# subset to transcripts with enough coverage
+min_coverage <- 5
+min_nonzero <- 100
+bam_objs <- sapply(expts, function(expt) { paste0(expt, "_bam") })
+transcript_coverage <- lapply(names(expts),
+                              function(expt) {
+                                tmp <- calculate_transcript_density(get(bam_objs[expt]),
+                                                                    scer_lengths_fname)
+                                tmp <- tmp[match(scer_lengths$transcript,
+                                                 names(tmp))]
+                                tmp[is.na(tmp)] <- 0
+                                return(tmp)
+                              })
+transcript_coverage <- rowMeans(do.call(cbind, transcript_coverage))
+transcript_num_nonzero <- lapply(names(expts),
+                                 function(expt) {
+                                   tmp <- count_nonzero_codons(get(bam_objs[expt]))
+                                   tmp <- tmp[match(scer_lengths$transcript,
+                                                    names(tmp))]
+                                   tmp[is.na(tmp)] <- 0
+                                   return(tmp)
+                                 })
+transcript_num_nonzero <- rowMeans(do.call(cbind, transcript_num_nonzero))
+good_transcripts <- data.frame(transcript=as.character(scer_lengths$transcript),
+                               coverage=transcript_coverage,
+                               num_nonzero=transcript_num_nonzero)
+good_transcripts <- subset(good_transcripts,
+                           coverage > min_coverage & num_nonzero > min_nonzero)
 
 # compute correlation by transcript ---------------------------------------
 
-corr_by_transcript <- lapply(split(cts_by_codon_filtered,
-                                   cts_by_codon_filtered$transcript),
+corr_by_transcript <- lapply(split(cts_by_codon,
+                                   cts_by_codon$transcript),
                              function(x) {
-                               raw_corr <- cor(x$fixed_raw, x$random_raw)
-                               corrected_corr <- cor(x$fixed_corrected, x$random_corrected)
+                               raw_corr <- cor(x$fixed_raw, x$random_raw,
+                                               method="spearman")
+                               corrected_corr <- cor(x$fixed_corrected, x$random_corrected,
+                                                     method="spearman")
                                return(c(raw_corr, corrected_corr))
                              })
 corr_by_transcript <- data.frame(do.call(rbind, corr_by_transcript))
 colnames(corr_by_transcript) <- c("raw_corr", "corrected_corr")
+corr_by_transcript$transcript <- rownames(corr_by_transcript)
+corr_by_transcript$good <- corr_by_transcript$transcript %in% as.character(good_transcripts$transcript)
+corr_by_transcript$which_set <- sapply(corr_by_transcript$transcript,
+                                       function(x) {
+                                         ifelse(x %in% training_set, "training",
+                                                ifelse(x %in% test_set,
+                                                       "test", "other"))
+                                       })
+corr_by_transcript <- plyr::join(corr_by_transcript, scer_lengths,
+                                 by="transcript")
+corr_by_transcript$delta_corr <- with(corr_by_transcript, corrected_corr - raw_corr)
+corr_by_transcript$mean_raw <- rowMeans(corr_by_transcript[, c("fixed_raw", "random_raw")])
+corr_by_transcript$mean_raw <- with(corr_by_transcript, mean_raw/num_codons)
 
-scer_lengths_filtered$delta_corr <- with(corr_by_transcript,
-                                         corrected_corr - raw_corr)
-scer_lengths_filtered$mean_raw <- rowMeans(scer_lengths_filtered[, c("fixed_raw", "random_raw")])
-scer_lengths_filtered$mean_raw <- with(scer_lengths_filtered, mean_raw/num_codons)
-
-save(corr_by_transcript, scer_lengths_filtered,
+save(corr_by_transcript,
      file=file.path(data_dir, "corr_by_transcript.Rda"))
 
 # generate plot -----------------------------------------------------------
 
-figure_4E_left <- ggplot(corr_by_transcript, aes(x=raw_corr, y=corrected_corr)) +
-  geom_point(size=0.5, alpha=0.1) +
+figure_4E <- ggplot(subset(corr_by_transcript, good),
+                    aes(x=raw_corr, y=corrected_corr, col=which_set)) +
   geom_abline(slope=1, intercept=0, col="blue") +
-  theme_classic(base_size=6) +
+  geom_point(size=0.5, alpha=0.5) +
+  theme_classic(base_size=8) + labs(col="") +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
-  xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)"))
+  xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)")) +
+  scale_color_manual(values=setNames(c("orange", "purple", "grey45"),
+                                     c("training", "test", "other")))
 
-figure_4E_right <- ggplot(scer_lengths_filtered, aes(x=mean_raw, y=delta_corr)) +
-  geom_point(size=0.5, alpha=0.1) +
-  theme_classic(base_size=6) + geom_hline(yintercept=0, color="grey25") +
-  geom_smooth(method="loess", formula=y~x, se=F, size=0.5) +
-  scale_x_log10() + coord_cartesian(xlim=c(0.5, 1200)) +
+ggplot(corr_by_transcript, aes(x=mean_raw+0.001, y=delta_corr, col=which_set)) +
+  theme_classic(base_size=8) + geom_hline(yintercept=0, color="grey25") +
+  # geom_smooth(method="loess", formula=y~x, se=F, size=0.5) +
+  scale_x_log10() + # coord_cartesian(xlim=c(0.5, 1200)) +
+  geom_point(size=0.5, alpha=0.5) + labs(col="") +
   xlab("mean coverage") + ylab(expression(Delta*"(correlation)")) +
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
+  scale_color_manual(values=setNames(c("orange", "purple", "grey45"),
+                                     c("training", "test", "other")))
 
-figure_4E <- figure_4E_left + figure_4E_right + plot_layout(widths=c(1,2))
+# figure_4E <- figure_4E_left + figure_4E_right + plot_layout(widths=c(1,2))
 
 ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
        plot=figure_4E, device="pdf", width=6.5, height=2)

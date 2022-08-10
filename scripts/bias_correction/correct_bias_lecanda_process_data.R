@@ -33,7 +33,7 @@ min_prop <- 0.9
 f5_length <- 3
 f3_length <- 3
 num_genes <- 250
-min_coverage <- 5
+min_coverage <- 50
 min_nonzero <- 100
 regression_model <- formula(count ~ transcript + A + P + E + d5*f5 + d3*f3 + gc)
 
