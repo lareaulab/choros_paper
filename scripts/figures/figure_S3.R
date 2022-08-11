@@ -44,7 +44,7 @@ transcript_cts <- lapply(expts,
                          })
 transcript_cts <- do.call(rbind, transcript_cts)
 transcript_cts$expt <- factor(transcript_cts$expt, levels=expts)
-levels(transcript_cts) <- names(expts)
+levels(transcript_cts$expt) <- names(expts)
 
 codon_cts$A <- sapply(seq(nrow(codon_cts)),
                       function(x) {
