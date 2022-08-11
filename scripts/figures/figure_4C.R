@@ -11,7 +11,7 @@ figures_dir <- file.path(here(), "figures")
 # load data ---------------------------------------------------------------
 
 expts <- c("fixedLinker_fixedPrimer", "randomLinker_randomPrimer")
-names(expts) <- c("fixed linker\nfixed primer", "random linker\nrandom primer")
+names(expts) <- c("fixed linker\nstandard primer", "random linker\nrandom primer")
 
 for(expt in expts) {
   load(file.path(data_dir, "lecanda_2016", expt,
@@ -54,12 +54,10 @@ names(fill_colors) <- c("bias", "E", "P", "A", "other")
 
 figure_4C <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
   geom_col() + scale_fill_manual(values=fill_colors) + 
-  theme_classic(base_size=6) + theme(legend.position="none") + 
-  # facet_grid_sc(rows=vars(expt), cols=vars(type),
-  #               scales=list(y=scales_y)) + 
-  facet_grid(expt~"Corrected counts") + 
+  theme_classic(base_size=8) + facet_grid(expt ~ "Corrected counts") + 
+  theme(legend.position="none", panel.spacing=unit(0.25, "in")) + 
   xlab("codon position") + ylab(expression(Delta*" correlation")) + 
   coord_cartesian(ylim=c(0, plot_max))
 
 ggsave(filename=file.path(figures_dir, "figure_4C.pdf"),
-       plot=figure_4C, device="pdf", width=1.5, height=2.5, units="in")
+       plot=figure_4C, device="pdf", width=2, height=2.75, units="in")
