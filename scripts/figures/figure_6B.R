@@ -15,7 +15,7 @@ load(file.path(data_dir, "monosome_codon_corr.Rda"))
 plot_max <- max(unlist(monosome_codon_corr))
 
 figure_6B <- plot_bias(monosome_codon_corr[[1]]) +
-  facet_grid(~"Raw counts") + theme_classic(base_size=6) +
+  facet_grid(~"Raw counts") + theme_classic(base_size=8) +
   theme(legend.position="none") + coord_cartesian(ylim=c(0, plot_max)) + 
   xlab("codon position")
 
