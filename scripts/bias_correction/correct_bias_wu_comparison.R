@@ -46,9 +46,9 @@ assign(training_obj,
 
 # compute regression ------------------------------------------------------
 
-fit_obj <- paste0(expt, "_fit")
+fit_obj <- paste0(comparison, "_fit")
 fit_fname <- file.path(results_dir, paste0(fit_obj, ".Rda"))
-coef_obj <- paste0(expt, "_coef")
+coef_obj <- paste0(comparison, "_coef")
 coef_fname <- file.path(results_dir, paste0(coef_obj, ".Rda"))
 if(!file.exists(coef_fname)) {
   assign(fit_obj, glm.nb(regression_model, data=get(training_obj)))
