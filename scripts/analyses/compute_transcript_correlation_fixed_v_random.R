@@ -125,20 +125,6 @@ corr_by_transcript$delta_corr <- with(corr_by_transcript, corrected_corr - raw_c
 corr_by_transcript$mean_raw <- rowMeans(corr_by_transcript[, c("fixed_raw", "random_raw")])
 corr_by_transcript$mean_raw <- with(corr_by_transcript, mean_raw/num_codons)
 
-save(corr_by_transcript,
-     file=file.path(data_dir, "corr_by_transcript.Rda"))
+save(corr_by_transcript, file=file.path(data_dir, "corr_by_transcript.Rda"))
 
-# generate plot -----------------------------------------------------------
-
-figure_4E <- ggplot(subset(corr_by_transcript, good & mean_raw > 50),
-                    aes(x=raw_corr, y=corrected_corr, col=which_set)) +
-  geom_abline(slope=1, intercept=0, col="blue") +
-  geom_point(size=0.5, alpha=0.5) + # facet_grid(~factor(which_set, levels=c("training", "test"))) +
-  theme_classic(base_size=8) + labs(col="") +
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
-  xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)")) +
-  scale_color_manual(values=setNames(c("orange", "purple", "grey45"),
-                                     c("training", "test", "other")))
-
-ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
-       plot=figure_4E, device="pdf", width=2.5, height=2)
+q(save="no")
