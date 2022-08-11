@@ -61,4 +61,18 @@ assign(bam_obj,
                                   fit_coefs=monosome_coef))))
 save(list=bam_obj, file=bam_fname)
 
+# evaluate bias -----------------------------------------------------------
+
+test_set <- readLines(file.path(dataset_dir, "monosome", "training_set.txt"))
+disome_bam$cod_idx <- disome_bam$cod_idx_leading
+test_data <- subset(disome_bam, transcript %in% test_set)
+disome_codon_corr <- sapply(c("count", "correct_250"),
+                            function(x) {
+                              evaluate_bias(test_data, which_column=x,
+                                            transcript_fa_fname, transcript_length_fname,
+                                            type="codon", num_f5_codons=20, num_f3_codons=10)
+                            }, simplify=F)
+
+save(disome_codon_corr, file=file.path(dataset_dir, "disome", "disome_codon_corr.Rda"))
+
 q(save="no")
