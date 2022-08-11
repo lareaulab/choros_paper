@@ -52,7 +52,7 @@ codon_cts$A <- sapply(seq(nrow(codon_cts)),
                         tmp_cod_idx <- codon_cts$cod_idx[x]
                         return(transcript_seq[[tmp_transcript]][as.character(tmp_cod_idx-1)])
                       })
-Asite_cts <- lapply(expts,
+Asite_cts <- lapply(names(expts),
                     function(x) {
                       # normalize to mean transcript count
                       tmp_cts <- subset(codon_cts, expt == x)
@@ -72,9 +72,10 @@ Asite_cts <- lapply(expts,
                                            }))
                                          })
                       norm_cts <- do.call(rbind, norm_cts)
-                      within(aggregate(cbind(count, correct_250) ~ A,
-                                       data=norm_cts, FUN=mean, na.rm=T),
-                             expt <- x)
+                      pause_scores <- aggregate(cbind(count, correct_250) ~ A,
+                                                data=norm_cts, FUN=mean, na.rm=T)
+                      pause_scores$expt <- x
+                      return(pause_scores)
                     })
 Asite_cts <- do.call(rbind, Asite_cts)
 Asite_cts$expt <- factor(Asite_cts$expt, levels=expts)
@@ -82,37 +83,38 @@ levels(Asite_cts$expt) <- names(expts)
 
 # generate plots ----------------------------------------------------------
 
-figure_S5A <- ggplot(codon_cts, aes(x=count, y=correct_250)) +
+figure_S3A <- ggplot(codon_cts, aes(x=count, y=correct_250)) +
   geom_hex(bins=100) + geom_abline(slope=1, intercept=0, color="grey25") +
-  facet_grid(expt~.) + theme_classic(base_size=6) +
+  facet_grid(expt~.) + theme_classic(base_size=8) +
   xlab("raw counts") + ylab("corrected counts") +
   scale_fill_gradient(low="grey", high="blue") +
   scale_x_log10(limits=c(0.5, 35250)) +
   scale_y_log10(limits=c(0.5, 62000))
 
-ggsave(filename=file.path(figures_dir, "figure_S5A.pdf"),
-       plot=figure_S5A, device="pdf", width=2, height=3.5, units="in")
+ggsave(filename=file.path(figures_dir, "figure_S3A.pdf"),
+       plot=figure_S3A, device="pdf", width=2, height=3.5, units="in")
 
-figure_S5B <- ggplot(transcript_cts, aes(x=count, y=correct_250)) +
+figure_S3B <- ggplot(transcript_cts, aes(x=count, y=correct_250)) +
   geom_hex(bins=50) + geom_abline(slope=1, intercept=0, color="grey25") +
-  facet_grid(expt~.) + theme_classic(base_size=6) +
+  facet_grid(expt~.) + theme_classic(base_size=8) +
   xlab("raw counts") + ylab("corrected counts") +
   scale_fill_gradient(low="grey", high="blue") +
   scale_x_log10(limits=c(0.5, 1.6e6)) + scale_y_log10(limits=c(0.5, 1.6e6))
 
-ggsave(filename=file.path(figures_dir, "figure_S5B.pdf"),
-       plot=figure_S5B, device="pdf", width=2, height=3.5, units="in")
+ggsave(filename=file.path(figures_dir, "figure_S3B.pdf"),
+       plot=figure_S3B, device="pdf", width=2, height=3.5, units="in")
 
-figure_S5C <- ggplot(Asite_cts, aes(x=count, y=correct_250)) +
+figure_S3C <- ggplot(subset(Asite_cts, !(A %in% c("TAA", "TAG", "TGA"))),
+                     aes(x=count, y=correct_250)) +
   geom_point(size=0.5, color="grey25") +
   geom_abline(slope=1, intercept=0, color="grey25") +
-  facet_grid(expt~.) + theme_classic(base_size=6) +
+  facet_grid(expt~.) + theme_classic(base_size=8) +
   xlab("raw counts") + ylab("corrected counts") +
   scale_fill_gradient(low="grey", high="blue") +
   scale_x_log10(limits=c(0.5, 25)) + scale_y_log10(limits=c(0.5, 50))
 
-ggsave(filename=file.path(figures_dir, "figure_S5C.pdf"),
-       plot=figure_S5C, device="pdf", width=2, height=3.5, units="in")
+ggsave(filename=file.path(figures_dir, "figure_S3C.pdf"),
+       plot=figure_S3C, device="pdf", width=2, height=3.5, units="in")
 
 save(codon_cts, transcript_cts, Asite_cts,
      file=file.path(here(), "data", "figure_S5_data.Rda"))
