@@ -92,7 +92,7 @@ figure_S3A <- ggplot(codon_cts, aes(x=count, y=correct_250)) +
   scale_y_log10(limits=c(0.5, 62000))
 
 ggsave(filename=file.path(figures_dir, "figure_S3A.pdf"),
-       plot=figure_S3A, device="pdf", width=2, height=3.5, units="in")
+       plot=figure_S3A, device="pdf", width=2.2, height=3.5, units="in")
 
 figure_S3B <- ggplot(transcript_cts, aes(x=count, y=correct_250)) +
   geom_hex(bins=50) + geom_abline(slope=1, intercept=0, color="grey25") +
@@ -102,7 +102,7 @@ figure_S3B <- ggplot(transcript_cts, aes(x=count, y=correct_250)) +
   scale_x_log10(limits=c(0.5, 1.6e6)) + scale_y_log10(limits=c(0.5, 1.6e6))
 
 ggsave(filename=file.path(figures_dir, "figure_S3B.pdf"),
-       plot=figure_S3B, device="pdf", width=2, height=3.5, units="in")
+       plot=figure_S3B, device="pdf", width=2.2, height=3.5, units="in")
 
 figure_S3C <- ggplot(subset(Asite_cts, !(A %in% c("TAA", "TAG", "TGA"))),
                      aes(x=count, y=correct_250)) +
