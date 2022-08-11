@@ -133,12 +133,12 @@ save(corr_by_transcript,
 figure_4E <- ggplot(subset(corr_by_transcript, good & mean_raw > 50),
                     aes(x=raw_corr, y=corrected_corr, col=which_set)) +
   geom_abline(slope=1, intercept=0, col="blue") +
-  geom_point(size=0.5, alpha=0.5) + # facet_grid(~factor(which_set, levels=c("training", "test"))) +
+  geom_point(size=0.5) + # facet_grid(~factor(which_set, levels=c("training", "test"))) +
   theme_classic(base_size=8) + labs(col="") +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
   xlab(expression(rho*"(raw counts)")) + ylab(expression(rho*"(corrected counts)")) +
-  scale_color_manual(values=setNames(c("orange", "purple", "grey45"),
-                                     c("training", "test", "other")))
+  scale_color_manual(values=alpha(setNames(c("orange", "purple", "grey45"),
+                                     c("training", "test", "other")), 0.5))
 
 ggsave(filename=file.path(figures_dir, "figure_4E.pdf"),
        plot=figure_4E, device="pdf", width=2.5, height=2)
