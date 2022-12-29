@@ -15,26 +15,49 @@ names(expts) <- c("fixed linker\nstandard primer", "random linker\nrandom primer
 
 for(expt in expts) {
   load(file.path(data_dir, "lecanda_2016", expt,
-                 paste0(expt, "_coef.Rda")))
-  assign(paste0(expt, "_coef"),
-         subset(get(paste0(expt, "_coef")),
-                group %in% c("f5", "f3", "d5:f5", "d3:f3")))
+                 paste0(expt, "_codon_corr.Rda")))
 }
 
-# aggregate data ----------------------------------------------------------
+# make plot ---------------------------------------------------------------
 
-all_terms <- fixedLinker_fixedPrimer_coef[, c("group", "term")]
-all_terms$fixed_estimate <- fixedLinker_fixedPrimer_coef$estimate
-all_terms$fixed_stderr <- fixedLinker_fixedPrimer_coef$std_error
-all_terms$random_estimate <- randomLinker_randomPrimer_coef$estimate
-all_terms$random_stderr <- randomLinker_randomPrimer_coef$std_error
-all_terms$group <- factor(all_terms$group, levels=c("f5", "d5:f5", "f3", "d3:f3"))
+scales_y <- lapply(expts, 
+                   function(x) {
+                     scale_y_continuous(limits=c(0, max(unlist(get(paste0(x, "_codon_corr"))))))
+                   })
 
-figure_4D <- ggplot(all_terms, aes(x=fixed_estimate, y=random_estimate, col=group)) + 
-  geom_point(size=0.1) + geom_abline(slope=1, intercept=0, color="grey25", size=0.25) + 
-  facet_wrap(~group) + theme_classic(base_size=8) + 
-  theme(legend.position="none", axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) + 
-  xlab("fixed adapter / standard RT primer") + ylab("random adapter\nrandom RT primer")
+plot_max <- max(sapply(expts, function(x) { max(unlist(get(paste0(x, "_codon_corr")))) }))
+
+corrected_codon_corr <- data.frame(position=unlist(lapply(expts,
+                                                          function(x) {
+                                                            names(get(paste0(x, "_codon_corr"))[[2]])
+                                                          })),
+                                   codon_corr=unlist(lapply(expts,
+                                                            function(x) {
+                                                              get(paste0(x, "_codon_corr"))[[2]]
+                                                            })),
+                                   expt=unlist(lapply(expts,
+                                                      function(x) {
+                                                        rep(x, length(get(paste0(x, "_codon_corr"))[[2]]))
+                                                      })))
+corrected_codon_corr$type <- "Corrected counts"
+corrected_codon_corr$expt <- factor(corrected_codon_corr$exp, levels=expts)
+levels(corrected_codon_corr$expt) <- names(expts)
+corrected_codon_corr$position <- sub("n", "-", corrected_codon_corr$position)
+corrected_codon_corr$position <- sub("p", "", corrected_codon_corr$position)
+corrected_codon_corr$position <- factor(corrected_codon_corr$position, 
+                                        levels=unique(corrected_codon_corr$position))
+corrected_codon_corr$label <- as.character(corrected_codon_corr$position)
+corrected_codon_corr$label[corrected_codon_corr$label %in% c("-5", "-4", "3", "4")] <- "bias"
+corrected_codon_corr$label[!(corrected_codon_corr$label %in% c("A", "P", "E", "bias"))] <- "other"
+fill_colors <- c(RColorBrewer::brewer.pal(4, "Set1"), "grey")
+names(fill_colors) <- c("bias", "E", "P", "A", "other")
+
+figure_4C <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
+  geom_col() + scale_fill_manual(values=fill_colors) + 
+  theme_classic(base_size=8) + facet_grid(expt ~ "Corrected counts") + 
+  theme(legend.position="none", panel.spacing=unit(0.25, "in")) + 
+  xlab("codon position") + ylab(expression(Delta*" correlation")) + 
+  coord_cartesian(ylim=c(0, plot_max))
 
 ggsave(filename=file.path(figures_dir, "figure_4D.pdf"),
-       plot=figure_4D, device="pdf", width=3, height=2, units="in")
+       plot=figure_4C, device="pdf", width=2, height=2.75, units="in")

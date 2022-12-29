@@ -40,5 +40,5 @@ figure_5A <- ggplot(coef_A,
             aes(label=codons), position=position_nudge(x=-0.35, y=0.2), size=2) +
   xlab(expression("WT "*beta^A)) + ylab(expression("3AT "*beta^A))
 
-ggsave(filename=file.path(figures_dir, "figure_5A.pdf"),
+ggsave(filename=file.path(figures_dir, "figure_6A.pdf"),
        plot=figure_5A, device="pdf", width=3.2, height=2, units="in")

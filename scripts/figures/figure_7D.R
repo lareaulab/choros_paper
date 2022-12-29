@@ -37,5 +37,5 @@ figure_6D <- ggplot(disome_codon_corr, aes(x=position, y=delta_corr, fill=fill))
   theme(legend.position="none") +
   xlab("codon position") + ylab(expression(Delta*" correlation"))
 
-ggsave(filename=file.path(figures_dir, "figure_6D.pdf"),
+ggsave(filename=file.path(figures_dir, "figure_7D.pdf"),
        plot=figure_6D, device="pdf", width=6.25, height=2.5)
