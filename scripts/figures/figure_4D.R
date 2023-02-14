@@ -10,7 +10,7 @@ figures_dir <- file.path(here(), "figures")
 # load data ---------------------------------------------------------------
 
 expts <- c("fixedLinker_fixedPrimer", "randomLinker_randomPrimer")
-names(expts) <- c("fixed linker\nstandard primer", "random linker\nrandom primer")
+names(expts) <- c("fixed-adapter", "random-adapter")
 
 for(expt in expts) {
   load(file.path(data_dir, "lecanda_2016", expt,
