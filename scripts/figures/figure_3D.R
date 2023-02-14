@@ -89,7 +89,7 @@ figure_3C <- ggplot(all_f5, aes(x=rel_eff, y=exp(estimate))) +
                     ymax=exp(estimate + qnorm(0.975)*std_error)),
                 col="grey25", size=0.5) + 
   theme_classic(base_size=8) + facet_grid(~expt) + 
-  xlab("CircLigase in vitro ligation efficiency") + ylab(expression("exp("*beta^A*")")) + 
+  xlab("CircLigase in vitro ligation efficiency") + ylab(expression("exp("*beta^f^5*")")) + 
   geom_text(data=plot_text, aes(label=label), hjust=1, size=1.5) + 
   geom_text(data=data.frame(rel_eff=1, estimate=log(3.5), 
                             label="does not use\nCircLigase", 
