@@ -3,7 +3,6 @@ rm(list=ls())
 library(here)
 library(choros)
 library(simRiboSeq)
-library(facetscales)
 
 data_dir <- file.path(here(), "data")
 figures_dir <- file.path(here(), "figures")
@@ -52,7 +51,7 @@ corrected_codon_corr$label[!(corrected_codon_corr$label %in% c("A", "P", "E", "b
 fill_colors <- c(RColorBrewer::brewer.pal(4, "Set1"), "grey")
 names(fill_colors) <- c("bias", "E", "P", "A", "other")
 
-figure_4C <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
+figure_4D <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=label)) + 
   geom_col() + scale_fill_manual(values=fill_colors) + 
   theme_classic(base_size=8) + facet_grid(expt ~ "Corrected counts") + 
   theme(legend.position="none", panel.spacing=unit(0.25, "in")) + 
@@ -60,4 +59,4 @@ figure_4C <- ggplot(corrected_codon_corr, aes(x=position, y=codon_corr, fill=lab
   coord_cartesian(ylim=c(0, plot_max))
 
 ggsave(filename=file.path(figures_dir, "figure_4D.pdf"),
-       plot=figure_4C, device="pdf", width=2, height=2.75, units="in")
+       plot=figure_4D, device="pdf", width=2, height=2.75, units="in")

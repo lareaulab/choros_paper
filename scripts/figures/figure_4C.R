@@ -3,7 +3,6 @@ rm(list=ls())
 library(here)
 library(choros)
 library(simRiboSeq)
-library(facetscales)
 
 data_dir <- file.path(here(), "data")
 figures_dir <- file.path(here(), "figures")
@@ -29,12 +28,13 @@ all_terms$fixed_stderr <- fixedLinker_fixedPrimer_coef$std_error
 all_terms$random_estimate <- randomLinker_randomPrimer_coef$estimate
 all_terms$random_stderr <- randomLinker_randomPrimer_coef$std_error
 all_terms$group <- factor(all_terms$group, levels=c("f5", "d5:f5", "f3", "d3:f3"))
+levels(all_terms$group) <- c("f5", "d5:f5 interaction", "f3", "d3:f3 interaction")
 
-figure_4D <- ggplot(all_terms, aes(x=fixed_estimate, y=random_estimate, col=group)) + 
+figure_4C <- ggplot(all_terms, aes(x=fixed_estimate, y=random_estimate, col=group)) + 
   geom_point(size=0.1) + geom_abline(slope=1, intercept=0, color="grey25", size=0.25) + 
   facet_wrap(~group) + theme_classic(base_size=8) + 
   theme(legend.position="none", axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) + 
-  xlab("fixed adapter / standard RT primer") + ylab("random adapter\nrandom RT primer")
+  xlab("fixed-adapter") + ylab("random-adapter")
 
 ggsave(filename=file.path(figures_dir, "figure_4C.pdf"),
-       plot=figure_4D, device="pdf", width=3, height=2, units="in")
+       plot=figure_4C, device="pdf", width=3, height=2, units="in")
