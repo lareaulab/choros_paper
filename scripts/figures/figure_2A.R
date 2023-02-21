@@ -29,11 +29,7 @@ f5_coefs <- lapply(expts,
                      if(expt %in% c("no_bias", "f3_bias")) {
                        tmp_coef$sim_prob <- 1
                      } else {
-                       if(expt == "f5_bias") {
-                         tmp_coef$sim_prob <- f5_bias[as.character(tmp_coef$term)]
-                       } else {
-                         tmp_coef$sim_prob <- f3_bias[as.character(tmp_coef$term)] # error in simulation
-                       }
+                       tmp_coef$sim_prob <- f5_bias[as.character(tmp_coef$term)]
                      }
                      return(tmp_coef)
                    })
@@ -49,11 +45,7 @@ f3_coefs <- lapply(expts,
                      if(expt %in% c("no_bias", "f5_bias")) {
                        tmp_coef$sim_prob <- 1
                      } else {
-                       if(expt == "f3_bias") {
-                         tmp_coef$sim_prob <- f3_bias[as.character(tmp_coef$term)]
-                       } else {
-                         tmp_coef$sim_prob <- f5_bias[as.character(tmp_coef$term)] # error in simulation
-                       }
+                       tmp_coef$sim_prob <- f3_bias[as.character(tmp_coef$term)]
                      }
                      return(tmp_coef)
                    })
@@ -79,11 +71,11 @@ levels(all_coefs$expt) <- c("no bias", "3' bias", "5' bias", "3' and 5' bias")
 all_coefs$group <- factor(all_coefs$group, levels=c("f5", "f3", "A"))
 levels(all_coefs$group) <- c("5' recovery", "3' recovery", "A-site codon")
 
-figure_2A <- ggplot(all_coefs, aes(x=sim_prob, y=exp(estimate))) + 
-  geom_abline(slope=1, intercept=0, col="blue", alpha=0.5) + 
-  geom_point(col="grey25", size=0.5) + theme_classic(base_size=8) + 
-  facet_grid(expt ~ group) + 
-  xlab("simulation probability") + ylab(expression("exp("*beta*")")) + 
+figure_2A <- ggplot(all_coefs, aes(x=sim_prob, y=exp(estimate))) +
+  geom_abline(slope=1, intercept=0, col="blue", alpha=0.5) +
+  geom_point(col="grey25", size=0.5) + theme_classic(base_size=8) +
+  facet_grid(expt ~ group) +
+  xlab("simulation probability") + ylab(expression("exp("*beta*")")) +
   theme(panel.spacing=unit(0.25, "in"), axis.text.x=element_text(size=6))
 
 ggsave(filename=file.path(figures_dir, "figure_2A.pdf"),
